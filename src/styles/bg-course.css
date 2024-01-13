@@ -1,0 +1,26 @@
+.wrap-bg {
+  position: relative;
+  width: 100%;
+  min-height: 350px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-size: cover;
+  background-position: center;
+  place-content: center;
+  text-align: left;
+}
+.wrap-bg::before {
+  content: "";
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.text-relative {
+  color: #fff;
+  position: relative;
+}
