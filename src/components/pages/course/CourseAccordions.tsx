@@ -21,7 +21,7 @@ const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
 ))(({ theme }) => ({
   border: `1px solid ${theme.palette.divider}`,
-  "&:first-child": {
+  "&:first-of-type": {
     borderTopLeftRadius: "1rem",
     borderTopRightRadius: "1rem",
   },
@@ -97,7 +97,7 @@ export default function CourseAccordions() {
               borderRadius: fullScreen ? "unset" : "1rem",
             }}
             component={"iframe"}
-            src="https://www.youtube.com/embed/VHoT4N43jK8?si=Z10rMnxG7YL7cWxC"
+            src="https://www.youtube.com/embed/WUeBzT43JyY"
             title="YouTube video player"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen

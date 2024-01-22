@@ -1,5 +1,5 @@
 // ** React Imports
-import * as React from "react";
+import { useEffect, useState } from "react";
 
 // ** MUI Imports
 import Autocomplete from "@mui/material/Autocomplete";
@@ -52,9 +52,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export default function SearchAutocomplete() {
   const { setID, setOpenFilter, openFilter } = useSearch();
-  const [autocompleteValue, setAutocompleteValue] = React.useState<string>("");
-  const [open, setOpen] = React.useState<boolean>(false);
-  const [option, setOption] = React.useState<SearchCourseType[]>([]);
+  const [autocompleteValue, setAutocompleteValue] = useState<string>("");
+  const [open, setOpen] = useState<boolean>(false);
+  const [option, setOption] = useState<SearchCourseType[]>([]);
 
   const handlechange = (data: SearchCourseType) => {
     if (data) {
@@ -67,7 +67,7 @@ export default function SearchAutocomplete() {
   };
 
   // Fetch data
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(

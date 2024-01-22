@@ -11,3 +11,8 @@ export type SearchCourseType = {
   id: number;
   name: string;
 };
+
+export type LinkType = {
+  pathName: string;
+  url: string;
+};
