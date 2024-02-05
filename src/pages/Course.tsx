@@ -1,32 +1,63 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect } from "react";
 import { useCourse } from "../store/course";
 import { useParams } from "react-router-dom";
 import { Grid } from "@mui/material";
 import CourseLayout from "../components/pages/course/CourseLayout";
 import CustomBackdrop from "../components/@core/CustomBackdrop";
+// ** API
+import { ONLINE_COURSE_API } from "../assets/api/online-course-api";
+import { fetchData } from "../assets/utils/fetchData";
+import { fetchYouTube } from "../assets/utils/fetchYoutube";
+import {
+  YOUTUBE_API_PLAYLIST,
+  YOUTUBE_API_VIDEOS,
+} from "../assets/api/youtube-api";
 
 const Course = () => {
   const { id } = useParams();
-  const { load, setLoad, setCourses } = useCourse();
+  const { load, setLoad, setCourses, setPlayList } = useCourse();
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoad(true);
-      try {
-        const response = await fetch(
-          `https://18acf89d-9962-4e88-807a-5629021e967b-00-3w1ylynbxarta.worf.replit.dev/page/courses/${id}`
-        );
-        const data = await response.json();
-        console.log(data);
+    setLoad(true);
+
+    fetchData(`${ONLINE_COURSE_API}/page/courses/${id}`)
+      .then(async (response) => {
+        const data = await response;
+        const { playlistId } = data;
+
+        const fetchPlaylistItems = async (playlistId: string) =>
+          await fetchYouTube(
+            `${YOUTUBE_API_PLAYLIST}&part=snippet&playlistId=${playlistId}&maxResults=50`
+          );
+
+        const fetchAllVideoDetails = async (videoIds: any) =>
+          await fetchYouTube(
+            `${YOUTUBE_API_VIDEOS}&part=snippet&id=${videoIds.join(",")}`
+          );
+
+        const filterDeletedVideos = async (playlistId: string) => {
+          const playlistItems = await fetchPlaylistItems(playlistId);
+          const videoIds = playlistItems.items.map(
+            (item: any) => item.snippet.resourceId.videoId
+          );
+          const allVideoDetails = await fetchAllVideoDetails(videoIds);
+
+          return allVideoDetails;
+        };
+
+        const youtubeData = await filterDeletedVideos(playlistId);
+        console.log(youtubeData);
 
         setCourses(data);
+        setPlayList(youtubeData);
         setLoad(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, []);
+      })
+      .catch(() => {
+        setLoad(false);
+      });
+  }, [id]);
+
   return (
     <Grid container spacing={4}>
       <Grid item xs={12}>

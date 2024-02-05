@@ -1,5 +1,5 @@
 // ** MUI Imports
-import { Container, Grid } from "@mui/material";
+import { Container, Grid, Typography } from "@mui/material";
 
 // ** Type Imports
 import { CourseType } from "../../../types/courses";
@@ -24,7 +24,9 @@ const HomeLayout = () => {
         {/* Coureses */}
         <Grid item xs={12}>
           <Grid container spacing={4}>
-            {courses && courses.length ? (
+            {load ? (
+              <CustomBackdrop load={load} />
+            ) : courses && courses.length ? (
               courses.map((item: CourseType) => {
                 return (
                   <Grid item key={item.id} xs={12} sm={6} md={3}>
@@ -33,7 +35,12 @@ const HomeLayout = () => {
                 );
               })
             ) : (
-              <CustomBackdrop load={load} />
+              <Grid item xs={12} sx={{ color: "#000", mt: "auto" }}>
+                <Typography variant="h5">Course Not found !</Typography>
+                <Typography variant="h6">
+                  This page could not be found.
+                </Typography>
+              </Grid>
             )}
           </Grid>
         </Grid>

@@ -11,6 +11,9 @@ import TuneIcon from "@mui/icons-material/Tune";
 import { SearchCourseType } from "../../../../types/courses";
 import { useSearch } from "../../../../store/search";
 
+// ** API
+import { ONLINE_COURSE_API } from "../../../../assets/api/online-course-api";
+
 // ** Search Bar Style
 const Search = styled("div")(({ theme }) => ({
   borderRadius: "10rem",
@@ -70,9 +73,7 @@ export default function SearchAutocomplete() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          `https://18acf89d-9962-4e88-807a-5629021e967b-00-3w1ylynbxarta.worf.replit.dev/courses/option`
-        );
+        const response = await fetch(`${ONLINE_COURSE_API}/courses/option`);
         const data = await response.json();
         setOption(data);
       } catch (error) {

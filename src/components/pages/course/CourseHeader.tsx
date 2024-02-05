@@ -12,10 +12,27 @@ const CourseHeader = () => {
       <Container maxWidth="lg" className="text-relative">
         <Box>
           <Slide direction="right" in {...{ timeout: 1000 }}>
-            <Typography variant="h1">{name}</Typography>
+            <Typography
+              variant="h1"
+              sx={{
+                wordBreak: "break-word",
+                fontSize: { xs: "10vw", sm: "5rem" },
+              }}
+            >
+              {name}
+            </Typography>
           </Slide>
           <Slide direction="left" in {...{ timeout: 1000 }}>
-            <Typography variant="h5">{description}</Typography>
+            <Typography
+              variant="h5"
+              sx={{
+                mb: 3,
+                wordBreak: "break-word",
+                fontSize: { xs: "5vw", sm: "2rem" },
+              }}
+            >
+              {description}
+            </Typography>
           </Slide>
         </Box>
       </Container>

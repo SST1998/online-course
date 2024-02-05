@@ -7,34 +7,24 @@ import { useSearch } from "../store/search";
 // ** Custom Component Imports
 import HomeLayout from "../components/pages/home/HomeLayout";
 
-const key: string = "AIzaSyBZFJw-oJ2UcAVTgPLHFBy1uiLBblDoEZM";
+// ** API
+import { ONLINE_COURSE_API } from "../assets/api/online-course-api";
+import { fetchData } from "../assets/utils/fetchData";
 
 const Home = () => {
   const { id, setCourses, setLoad } = useSearch();
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoad(true);
-      try {
-        const response = await fetch(
-          `https://18acf89d-9962-4e88-807a-5629021e967b-00-3w1ylynbxarta.worf.replit.dev/courses/${id}`
-        );
-        const data = await response.json();
+    setLoad(true);
+    fetchData(`${ONLINE_COURSE_API}/courses/${id}`)
+      .then(async (response) => {
+        const data = await response;
         setCourses(data);
         setLoad(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-
-    const fetchYouTube = async () => {
-      const response = await fetch(
-        `https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=PLUaB-1hjhk8GHKfndKjyDMHPg_HlQ4vpK&key=${key}`
-      );
-      console.log(response);
-    };
-    fetchYouTube();
+      })
+      .catch(() => {
+        setLoad(false);
+      });
   }, [id]);
 
   return <HomeLayout />;

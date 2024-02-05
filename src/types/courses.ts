@@ -16,3 +16,5 @@ export type LinkType = {
   pathName: string;
   url: string;
 };
+
+export type {};
