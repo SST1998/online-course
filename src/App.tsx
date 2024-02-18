@@ -5,6 +5,8 @@ import "./styles/App.css";
 import Layout from "./components/layout/Layout";
 import Course from "./pages/Course";
 import Page404 from "./pages/Page404";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
 
 const App = () => {
   return (
@@ -12,6 +14,8 @@ const App = () => {
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/sign-up" element={<SignUp />} />
           <Route path="/course/:id" element={<Course />} />
           <Route path="/*" element={<Page404 />} />
         </Routes>

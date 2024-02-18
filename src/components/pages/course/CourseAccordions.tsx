@@ -6,6 +6,7 @@ import MuiAccordion, { AccordionProps } from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import {
   Box,
   CardMedia,
@@ -21,11 +22,14 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import BpCheckbox from "../../@core/CustomizedCheckbox";
+import { getVideoStartTime } from "../../../assets/utils/fetchYoutube";
 
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
 ))(({ theme }) => ({
-  border: `1px solid ${theme.palette.divider}`,
+  backgroundColor: theme.palette.grey[200],
+  color: "#000",
+  border: `1px solid ${theme.palette.grey[500]}`,
   "&:first-of-type": {
     borderTopLeftRadius: "1rem",
     borderTopRightRadius: "1rem",
@@ -48,33 +52,55 @@ type Props = {
 };
 
 export default function CourseAccordions({ data, index }: Props) {
-  const [open, setOpen] = useState<boolean>(false);
+  const [openAccordion, setOpenAccordion] = useState<boolean>(
+    localStorage.getItem(`course-${data.id}`) ? true : false
+  );
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [checked, setChecked] = useState<boolean>(
+    localStorage.getItem(`course-${data.id}`) ? true : false
+  );
+
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const { title } = data.snippet;
+  const videoTime = getVideoStartTime(data);
 
-  const { title, resourceId } = data.snippet;
-  const handleOpen = () => {
-    setOpen(true);
-  };
-  const handleClose = () => {
-    setOpen(false);
+  const handleClickAccordion = () => {
+    setOpenAccordion((expand) => (expand ? false : true));
   };
 
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  const handleCheckbox = () => {
+    setChecked((isChecked) => (isChecked ? false : true));
+    if (localStorage.getItem(`course-${data.id}`)) {
+      localStorage.removeItem(`course-${data.id}`);
+    } else {
+      localStorage.setItem(
+        `course-${data.id}`,
+        `https://www.youtube.com/embed/${data.id}`
+      );
+    }
+  };
   const splitIndex: string[] = index.toString().split("");
   const formatNumberTitle =
     splitIndex.length > 1 ? splitIndex.join("") : `0${splitIndex.join("")}`;
   const titleNo = formatNumberTitle;
 
-  console.log(data);
-
   return (
     <>
-      <Accordion>
+      <Accordion expanded={openAccordion}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           sx={{
             py: 1,
           }}
+          onClick={handleClickAccordion}
         >
           <Box
             sx={{
@@ -84,8 +110,24 @@ export default function CourseAccordions({ data, index }: Props) {
               alignItems: { xs: "flex-start", md: "center" },
             }}
           >
-            <Typography variant="h4">{titleNo}</Typography>
-            <Typography variant="h6" align="left" sx={{ ml: 2 }}>
+            <Typography
+              variant="h4"
+              sx={{
+                color: (theme) => theme.palette.grey[500],
+                fontWeight: (theme) => theme.typography.fontWeightBold,
+              }}
+            >
+              {titleNo}
+            </Typography>
+            <Typography
+              variant="h6"
+              align="left"
+              sx={{
+                ml: 2,
+                color: (theme) => theme.palette.grey[700],
+                fontWeight: (theme) => theme.typography.fontWeightRegular,
+              }}
+            >
               {title}
             </Typography>
           </Box>
@@ -93,7 +135,7 @@ export default function CourseAccordions({ data, index }: Props) {
         <Divider />
         <AccordionDetails
           sx={{
-            bgcolor: "#f5f5f5",
+            bgcolor: "#fff",
           }}
         >
           <Box
@@ -103,18 +145,54 @@ export default function CourseAccordions({ data, index }: Props) {
               cursor: "pointer",
             }}
           >
-            <BpCheckbox key={index} />
-            <Typography align="left" sx={{ ml: 1 }} onClick={handleOpen}>
-              {title}
-            </Typography>
+            <BpCheckbox
+              key={index}
+              checked={checked}
+              onClick={handleCheckbox}
+            />
+            <Box
+              sx={{
+                ml: 1,
+                width: "100%",
+                color: "#000",
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "space-between",
+                alignItems: "center",
+                "&:hover": {
+                  color: "primary.main",
+                },
+              }}
+              onClick={handleOpenDialog}
+            >
+              <Typography align="left">{title}</Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  bgcolor: (theme) => theme.palette.grey[300],
+                  p: 1,
+                  my: 1,
+                  borderRadius: 3,
+                }}
+              >
+                <AccessTimeIcon sx={{ mr: 1 }} />
+                <Typography
+                  sx={{
+                    fontWeight: (theme) => theme.typography.fontWeightBold,
+                  }}
+                >
+                  {videoTime}
+                </Typography>
+              </Box>
+            </Box>
           </Box>
         </AccordionDetails>
       </Accordion>
 
       {/* Video */}
       <Dialog
-        open={open}
-        onClose={handleClose}
+        open={openDialog}
+        onClose={handleCloseDialog}
         fullWidth
         maxWidth="lg"
         sx={{
@@ -141,7 +219,7 @@ export default function CourseAccordions({ data, index }: Props) {
           </Box>
           <IconButton
             aria-label="close"
-            onClick={handleClose}
+            onClick={handleCloseDialog}
             sx={{
               position: "absolute",
               right: 8,
@@ -163,7 +241,7 @@ export default function CourseAccordions({ data, index }: Props) {
               borderRadius: fullScreen ? "unset" : "1rem",
             }}
             component={"iframe"}
-            src={`https://www.youtube.com/embed/${resourceId.videoId}`}
+            src={`https://www.youtube.com/embed/${data.id}`}
             title="YouTube video player"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen

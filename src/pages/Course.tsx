@@ -33,7 +33,9 @@ const Course = () => {
 
         const fetchAllVideoDetails = async (videoIds: any) =>
           await fetchYouTube(
-            `${YOUTUBE_API_VIDEOS}&part=snippet&id=${videoIds.join(",")}`
+            `${YOUTUBE_API_VIDEOS}&part=snippet,contentDetails&id=${videoIds.join(
+              ","
+            )}`
           );
 
         const filterDeletedVideos = async (playlistId: string) => {
@@ -47,7 +49,6 @@ const Course = () => {
         };
 
         const youtubeData = await filterDeletedVideos(playlistId);
-        console.log(youtubeData);
 
         setCourses(data);
         setPlayList(youtubeData);
@@ -56,7 +57,7 @@ const Course = () => {
       .catch(() => {
         setLoad(false);
       });
-  }, [id]);
+  }, [id, setCourses, setLoad, setPlayList]);
 
   return (
     <Grid container spacing={4}>

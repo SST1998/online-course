@@ -1,6 +1,5 @@
 // ** MUI Imports
-import { Container, Grid, Typography } from "@mui/material";
-
+import { Container, Grid } from "@mui/material";
 // ** Type Imports
 import { CourseType } from "../../../types/courses";
 
@@ -11,6 +10,7 @@ import { useSearch } from "../../../store/search";
 import SearchBar from "./SearchBar/SearchBar";
 import CourseCard from "./CourseCard";
 import CustomBackdrop from "../../@core/CustomBackdrop";
+import Error500 from "../../@core/Error500";
 
 const HomeLayout = () => {
   const { courses, load } = useSearch();
@@ -35,12 +35,7 @@ const HomeLayout = () => {
                 );
               })
             ) : (
-              <Grid item xs={12} sx={{ color: "#000", mt: "auto" }}>
-                <Typography variant="h5">Course Not found !</Typography>
-                <Typography variant="h6">
-                  This page could not be found.
-                </Typography>
-              </Grid>
+              <Error500 />
             )}
           </Grid>
         </Grid>

@@ -34,12 +34,11 @@ export default function SearchChip({ categories }: CategorieProp) {
       <Collapse in={openFilter}>
         <Box
           sx={{
-            mt: 1,
-            py: 1,
+            p: 1,
             display: "flex",
             justifyContent: "flex-start",
-            width: "100%",
             borderRadius: "10rem",
+            border: "1px solid #000",
           }}
         >
           <Chip
@@ -47,7 +46,7 @@ export default function SearchChip({ categories }: CategorieProp) {
             label="All"
             onClick={() => handleClick("All")}
             sx={{
-              ml: 1,
+              position: "sticky",
               p: 1,
               border: "1px solid #000",
               bgcolor: "#000",
@@ -58,20 +57,28 @@ export default function SearchChip({ categories }: CategorieProp) {
               },
             }}
           />
-          {categories.length != 0 &&
-            categories.map((categorie, index) => (
-              <Chip
-                key={index}
-                variant="outlined"
-                label={categorie}
-                onClick={() => handleClick(categorie)}
-                sx={{
-                  ml: 1,
-                  p: 1,
-                  border: "1px solid #000",
-                }}
-              />
-            ))}
+          <Box
+            sx={{
+              overflowX: "scroll",
+              display: "flex",
+              justifyContent: "flex-start",
+            }}
+          >
+            {categories.length != 0 &&
+              categories.map((categorie, index) => (
+                <Chip
+                  key={index}
+                  variant="outlined"
+                  label={categorie}
+                  onClick={() => handleClick(categorie)}
+                  sx={{
+                    ml: 1,
+                    p: 1,
+                    border: "1px solid #000",
+                  }}
+                />
+              ))}
+          </Box>
         </Box>
       </Collapse>
     </>

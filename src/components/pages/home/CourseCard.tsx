@@ -9,7 +9,7 @@ import {
   Chip,
 } from "@mui/material";
 import { CourseType } from "../../../types/courses";
-import CourseLink from "../../@core/CourseLink";
+import CustomLink from "../../@core/CustomLink";
 
 interface CardCourseProp {
   data: CourseType;
@@ -27,19 +27,20 @@ const CourseCardComponent = styled(Card)`
 
 export default function CourseCard({ data }: CardCourseProp) {
   return (
-    <CourseLink to={`/course/${data.id}`}>
+    <CustomLink to={`/course/${data.id}`}>
       <CourseCardComponent
         sx={{
           mx: "auto",
           maxWidth: 345,
+          height: "25em",
           borderRadius: 5,
           borderColor: "#000",
         }}
         variant="outlined"
       >
         <CardActionArea>
-          <CardMedia sx={{ height: 200 }} image={data.img} title="" />
-          <CardContent>
+          <CardMedia sx={{ height: 200 }} image={data.img} />
+          <CardContent sx={{ height: "100vh" }}>
             <Typography
               gutterBottom
               align="left"
@@ -81,6 +82,6 @@ export default function CourseCard({ data }: CardCourseProp) {
           </CardContent>
         </CardActionArea>
       </CourseCardComponent>
-    </CourseLink>
+    </CustomLink>
   );
 }

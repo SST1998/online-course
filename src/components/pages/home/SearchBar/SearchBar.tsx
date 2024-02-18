@@ -5,6 +5,7 @@ import { CourseType } from "../../../../types/courses";
 
 // ** API
 import { ONLINE_COURSE_API } from "../../../../assets/api/online-course-api";
+import { Grid } from "@mui/material";
 
 const SearchBar = () => {
   const [categories, setCategories] = useState<CourseType["categories"][]>([]);
@@ -21,10 +22,14 @@ const SearchBar = () => {
     fetchData();
   }, []);
   return (
-    <>
-      <SearchAutocomplete />
-      <SearchChip categories={categories} />
-    </>
+    <Grid container spacing={1}>
+      <Grid item xs={12}>
+        <SearchAutocomplete />
+      </Grid>
+      <Grid item xs={12}>
+        <SearchChip categories={categories} />
+      </Grid>
+    </Grid>
   );
 };
 

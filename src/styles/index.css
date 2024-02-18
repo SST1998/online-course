@@ -1,10 +1,9 @@
+@import url("https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&family=M+PLUS+1+Code&display=swap");
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
-  font-weight: 400;
 
   color-scheme: light dark;
-  /* color: rgba(255, 255, 255, 0.87); */
   color: #000;
   background-color: #f8f8ff;
 
@@ -13,6 +12,13 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+}
+
+* {
+  font-family: "Kode Mono", monospace !important;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
 }
 
 html {

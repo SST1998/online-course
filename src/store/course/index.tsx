@@ -3,7 +3,7 @@ import { create } from "zustand";
 import { CourseType } from "../../types/courses";
 
 export type CoursePageType = {
-  courses: CourseType;
+  courses: CourseType | null;
   id: number;
   load: boolean;
   playlist?: any;
@@ -14,14 +14,7 @@ export type CoursePageType = {
 };
 
 export const useCourse = create<CoursePageType>()((set) => ({
-  courses: {
-    categories: "",
-    description: "",
-    id: 0,
-    name: "",
-    playlistId: "",
-    img: "",
-  },
+  courses: null,
   id: 0,
   load: false,
   playlist: {},

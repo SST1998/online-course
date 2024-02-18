@@ -25,7 +25,7 @@ const Home = () => {
       .catch(() => {
         setLoad(false);
       });
-  }, [id]);
+  }, [id, setCourses, setLoad]);
 
   return <HomeLayout />;
 };
