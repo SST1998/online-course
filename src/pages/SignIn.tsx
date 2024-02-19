@@ -3,8 +3,6 @@ import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
@@ -13,17 +11,50 @@ import { webName } from "../components/layout/navBarPages";
 import CustomButton from "../components/@core/CustomButton";
 import Logo from "../assets/images/logo.png";
 import { Copyright } from "../components/@core/CopyRight";
+import { useAuth } from "../hook/useAuth";
 
+// ** Third Party Imports
+import * as yup from "yup";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import CustomLink from "../components/@core/CustomLink";
+interface FormData {
+  email: string;
+  password: string;
+}
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
+const schema = yup.object().shape({
+  email: yup.string().email().required(),
+  password: yup.string().min(5).required(),
+});
+const defaultValues = {
+  password: "",
+  email: "",
+};
+
 export default function SignIn() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
+  const [rememberMe, setRememberMe] = React.useState<boolean>(false);
+  const auth = useAuth();
+  const {
+    control,
+    setError,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues,
+    mode: "onBlur",
+    resolver: yupResolver(schema),
+  });
+
+  const onSubmit = (data: FormData) => {
+    const { email, password } = data;
+    auth.login({ email, password, rememberMe }, () => {
+      setError("email", {
+        type: "manual",
+        message: "Email or Password is invalid",
+      });
     });
   };
 
@@ -50,33 +81,66 @@ export default function SignIn() {
           </Typography>
           <Box
             component="form"
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
             noValidate
             sx={{ mt: 1 }}
           >
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
+            <Controller
               name="email"
-              autoComplete="email"
-              autoFocus
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { value, onChange, onBlur } }) => (
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  name="email"
+                  autoComplete="email"
+                  autoFocus
+                  label="Email"
+                  value={value}
+                  onBlur={onBlur}
+                  onChange={onChange}
+                  error={Boolean(errors.email)}
+                  helperText={errors.email && errors.email.message}
+                />
+              )}
             />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
+            <Controller
               name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { value, onChange, onBlur } }) => (
+                <TextField
+                  autoFocus
+                  autoComplete="current-password"
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  value={value}
+                  onBlur={onBlur}
+                  onChange={onChange}
+                  error={Boolean(errors.password)}
+                  helperText={errors.password && errors.password.message}
+                />
+              )}
             />
+
             <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
+              control={
+                <Checkbox
+                  color="primary"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
+              }
               label="Remember me"
+              id="remember"
             />
             <CustomButton
               type="submit"
@@ -86,18 +150,12 @@ export default function SignIn() {
             >
               Sign In
             </CustomButton>
-            <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
-            </Grid>
+
+            <CustomLink to={"/sign-up"}>
+              <CustomButton fullWidth variant="outlined">
+                Sign Up
+              </CustomButton>
+            </CustomLink>
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
