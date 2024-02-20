@@ -14,12 +14,14 @@ import { LinkType } from "../../types/courses";
 import { Link } from "react-router-dom";
 import { navBarPages, webName } from "./navBarPages";
 import CustomLink from "../@core/CustomLink";
+import { useAuth } from "../../hook/useAuth";
 
 const Navbar = () => {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
-
+  const userData = window.localStorage.getItem("user") ? true : false;
+  const auth = useAuth();
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -166,11 +168,12 @@ const Navbar = () => {
                   <Typography textAlign="center">Sign Up</Typography>
                 </MenuItem>
               </CustomLink>
-              <CustomLink to={"/sign-in"} style={{ color: "#000" }}>
-                <MenuItem onClick={handleCloseNavMenu}>
+
+              {userData && (
+                <MenuItem onClick={auth.logout}>
                   <Typography textAlign="center">Sign Out</Typography>
                 </MenuItem>
-              </CustomLink>
+              )}
             </Menu>
           </Box>
         </Toolbar>

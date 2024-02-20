@@ -8,7 +8,8 @@ import {
   ErrCallbackType,
   UserDataType,
 } from "./types";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { ONLINE_COURSE_API } from "../assets/api/online-course-api";
 
 // ** Defaults
 const defaultProvider: AuthValuesType = {
@@ -32,60 +33,59 @@ const AuthProvider = ({ children }: Props) => {
   const [loading, setLoading] = useState<boolean>(defaultProvider.loading);
 
   // ** Hooks
-  const router = useNavigate();
+  const navigate = useNavigate();
+  const location = useLocation();
   useEffect(() => {
-    // window.localStorage.setItem(
-    //   "user",
-    //   JSON.stringify([
-    //     {
-    //       email: "user@gmail.com",
-    //       password: "1234",
-    //     },
-    //   ])
-    // );
-
+    setLoading(true);
     const initAuth = async (): Promise<void> => {
-      const storedToken = window.localStorage.getItem("user");
-      if (storedToken) {
-        console.log("if");
-
+      const userData = window.localStorage.getItem("user");
+      if (userData) {
         setLoading(false);
       } else {
-        console.log("else");
         setLoading(false);
-        router("/sign-in");
+        if (location.pathname === "/") {
+          navigate("/");
+        } else if (location.pathname === "/sign-up") {
+          navigate("/sign-up");
+        } else {
+          navigate("/sign-in");
+        }
       }
     };
 
     initAuth();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [navigate]);
 
-  const handleLogin = (
+  const handleLogin = async (
     params: LoginParams,
     errorCallback?: ErrCallbackType
   ) => {
-    // axios
-    // .post(authConfig.loginEndpoint, params)
-    // .then(async response => {
-    //   params.rememberMe
-    //     ? window.localStorage.setItem(authConfig.storageTokenKeyName, response.data.accessToken)
-    //     : null
-    //   const returnUrl = router.query.returnUrl
+    await fetch(`${ONLINE_COURSE_API}/login/${params.email}/${params.password}`)
+      .then((res) => {
+        if (res.status == 200) {
+          // params.rememberMe
+          //   ? window.localStorage.setItem("user", JSON.stringify(params))
+          //   : null;
+          window.localStorage.setItem("user", JSON.stringify(params));
 
-    //   setUser({ ...response.data.userData })
-    //   params.rememberMe ? window.localStorage.setItem('userData', JSON.stringify(response.data.userData)) : null
-
-    //   const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
-
-    //   router.replace(redirectURL as string)
-    // })
-    console.log(params);
+          navigate("/");
+        } else if (res.status == 401) {
+          alert("Access denied");
+          return;
+        }
+      })
+      .catch((err) => {
+        console.log("catch");
+        if (errorCallback) {
+          errorCallback(err);
+        }
+      });
   };
 
   const handleLogout = () => {
-    window.localStorage.removeItem("userData");
-    router("/sign-in");
+    window.localStorage.removeItem("user");
+    navigate("/sign-in");
   };
 
   const values = {
