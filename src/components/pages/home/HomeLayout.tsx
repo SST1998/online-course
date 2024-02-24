@@ -21,7 +21,7 @@ const HomeLayout = () => {
           <SearchBar />
         </Grid>
 
-        {/* Coureses */}
+        {/* Courses */}
         <Grid item xs={12}>
           <Grid container spacing={4}>
             {load ? (

@@ -238,7 +238,12 @@ const Navbar = () => {
                       <Typography textAlign="center">Sign Up</Typography>
                     </MenuItem>
                   </CustomLink>
-                  <MenuItem onClick={auth.logout}>
+                  <MenuItem
+                    onClick={() => {
+                      handleCloseNavMenu();
+                      auth.logout();
+                    }}
+                  >
                     <Typography textAlign="center">Sign Out</Typography>
                   </MenuItem>
                 </>

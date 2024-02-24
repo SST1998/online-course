@@ -2,7 +2,7 @@ import { LinkType } from "../../types/courses";
 
 export const navBarPages: LinkType[] = [
   {
-    pathName: "All Courese",
+    pathName: "All Courses",
     url: "/",
   },
 ];
