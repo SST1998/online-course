@@ -87,16 +87,36 @@ const Navbar = () => {
           >
             {navBarPages.length !== 0
               ? navBarPages.map(({ pathName, url }: LinkType, index) => (
-                  <Link key={index} to={url} style={{ textDecoration: "none" }}>
+                  <CustomLink key={index} to={url}>
                     <Button
                       onClick={handleCloseNavMenu}
                       sx={{ my: 2, color: "white", display: "block" }}
                     >
                       {pathName}
                     </Button>
-                  </Link>
+                  </CustomLink>
                 ))
               : null}
+            {!isUserData && (
+              <Box sx={{ display: "flex" }}>
+                <CustomLink to={"/sign-in"}>
+                  <Button
+                    onClick={handleCloseNavMenu}
+                    sx={{ my: 2, color: "white", display: "block" }}
+                  >
+                    Sign In
+                  </Button>
+                </CustomLink>
+                <CustomLink to={"/sign-up"}>
+                  <Button
+                    onClick={handleCloseNavMenu}
+                    sx={{ my: 2, color: "white", display: "block" }}
+                  >
+                    Sign Up
+                  </Button>
+                </CustomLink>
+              </Box>
+            )}
           </Box>
 
           {/* On Mobile Device */}
@@ -211,23 +231,31 @@ const Navbar = () => {
                     </CustomLink>
                   ))
                 : null}
-
               {isUserData ? (
-                <MenuItem onClick={auth.logout}>
-                  <Typography textAlign="center">Sign Out</Typography>
-                </MenuItem>
-              ) : (
-                <CustomLink to={"/sign-in"} style={{ color: "#000" }}>
-                  <MenuItem onClick={handleCloseNavMenu}>
-                    <Typography textAlign="center">Sign In</Typography>
+                <>
+                  <CustomLink to={"/sign-up"} style={{ color: "#000" }}>
+                    <MenuItem onClick={handleCloseNavMenu}>
+                      <Typography textAlign="center">Sign Up</Typography>
+                    </MenuItem>
+                  </CustomLink>
+                  <MenuItem onClick={auth.logout}>
+                    <Typography textAlign="center">Sign Out</Typography>
                   </MenuItem>
-                </CustomLink>
+                </>
+              ) : (
+                <>
+                  <CustomLink to={"/sign-in"} style={{ color: "#000" }}>
+                    <MenuItem onClick={handleCloseNavMenu}>
+                      <Typography textAlign="center">Sign In</Typography>
+                    </MenuItem>
+                  </CustomLink>
+                  <CustomLink to={"/sign-up"} style={{ color: "#000" }}>
+                    <MenuItem onClick={handleCloseNavMenu}>
+                      <Typography textAlign="center">Sign Up</Typography>
+                    </MenuItem>
+                  </CustomLink>
+                </>
               )}
-              <CustomLink to={"/sign-up"} style={{ color: "#000" }}>
-                <MenuItem onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">Sign Up</Typography>
-                </MenuItem>
-              </CustomLink>
             </Menu>
           </Box>
         </Toolbar>
