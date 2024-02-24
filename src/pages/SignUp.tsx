@@ -13,17 +13,52 @@ import { Copyright } from "../components/@core/CopyRight";
 import Logo from "../assets/images/logo.png";
 import { webName } from "../components/layout/navBarPages";
 import CustomButton from "../components/@core/CustomButton";
-
+// ** Third Party Imports
+import * as yup from "yup";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useAuth } from "../hook/useAuth";
+interface FormData {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+}
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
+const schema = yup.object().shape({
+  email: yup.string().email().required(),
+  password: yup.string().min(5).required(),
+  firstName: yup.string().required(),
+  lastName: yup.string().required(),
+});
+const defaultValues = {
+  email: "",
+  firstName: "",
+  lastName: "",
+  password: "",
+};
 export default function SignUp() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
+  const auth = useAuth();
+  const {
+    control,
+    setError,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues,
+    mode: "onBlur",
+    resolver: yupResolver(schema),
+  });
+
+  const onSubmit = (data: FormData) => {
+    const { email, password, firstName, lastName } = data;
+    auth.signup({ email, password, firstName, lastName }, () => {
+      setError("email", {
+        type: "manual",
+        message: "Email or Password is invalid",
+      });
     });
   };
 
@@ -51,50 +86,97 @@ export default function SignUp() {
           <Box
             component="form"
             noValidate
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  autoComplete="given-name"
+                <Controller
                   name="firstName"
-                  required
-                  fullWidth
-                  id="firstName"
-                  label="First Name"
-                  autoFocus
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange, onBlur } }) => (
+                    <TextField
+                      autoComplete="given-name"
+                      name="firstName"
+                      required
+                      fullWidth
+                      id="firstName"
+                      label="First Name"
+                      value={value}
+                      onBlur={onBlur}
+                      onChange={onChange}
+                      error={Boolean(errors.firstName)}
+                      helperText={errors.firstName && errors.firstName.message}
+                    />
+                  )}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
+                <Controller
                   name="lastName"
-                  autoComplete="family-name"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange, onBlur } }) => (
+                    <TextField
+                      autoComplete="given-name"
+                      name="lastName"
+                      required
+                      fullWidth
+                      id="lastName"
+                      label="Last Name"
+                      value={value}
+                      onBlur={onBlur}
+                      onChange={onChange}
+                      error={Boolean(errors.lastName)}
+                      helperText={errors.lastName && errors.lastName.message}
+                    />
+                  )}
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
+                <Controller
                   name="email"
-                  autoComplete="email"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange, onBlur } }) => (
+                    <TextField
+                      autoComplete="given-name"
+                      name="email"
+                      required
+                      fullWidth
+                      id="email"
+                      label="Email Address"
+                      value={value}
+                      onBlur={onBlur}
+                      onChange={onChange}
+                      error={Boolean(errors.email)}
+                      helperText={errors.email && errors.email.message}
+                    />
+                  )}
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
+                <Controller
                   name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange, onBlur } }) => (
+                    <TextField
+                      autoComplete="given-name"
+                      name="password"
+                      required
+                      fullWidth
+                      type="password"
+                      id="password"
+                      label="Password"
+                      value={value}
+                      onBlur={onBlur}
+                      onChange={onChange}
+                      error={Boolean(errors.password)}
+                      helperText={errors.password && errors.password.message}
+                    />
+                  )}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -125,7 +207,7 @@ export default function SignUp() {
             </CustomButton>
             <Grid container justifyContent="center">
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="/sign-in" variant="body2">
                   Already have an account? Sign in
                 </Link>
               </Grid>

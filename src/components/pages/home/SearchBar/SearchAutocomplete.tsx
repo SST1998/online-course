@@ -12,7 +12,8 @@ import { SearchCourseType } from "../../../../types/courses";
 import { useSearch } from "../../../../store/search";
 
 // ** API
-import { ONLINE_COURSE_API } from "../../../../assets/api/online-course-api";
+import axios from "axios";
+import { fetchCoursesOption } from "../../../../assets/api/course";
 
 // ** Search Bar Style
 const Search = styled("div")(({ theme }) => ({
@@ -62,7 +63,9 @@ export default function SearchAutocomplete() {
   const handlechange = (data: SearchCourseType) => {
     if (data) {
       setID(data.id);
-    } else [setID(0)];
+    } else {
+      [setID(0)];
+    }
   };
 
   const handleClickFilter = () => {
@@ -71,10 +74,11 @@ export default function SearchAutocomplete() {
 
   // Fetch data
   useEffect(() => {
+    fetchCoursesOption();
     const fetchData = async () => {
       try {
-        const response = await fetch(`${ONLINE_COURSE_API}/courses/option`);
-        const data = await response.json();
+        const response = await axios.get("/courses/option");
+        const data = await response.data;
         setOption(data);
       } catch (error) {
         console.error("Error fetching data:", error);

@@ -4,7 +4,7 @@ import { useSearch } from "../../../../store/search";
 import { CourseType } from "../../../../types/courses";
 
 // ** API
-import { ONLINE_COURSE_API } from "../../../../assets/api/online-course-api";
+import axios from "axios";
 
 interface CategorieProp {
   categories: CourseType["categories"][];
@@ -18,10 +18,10 @@ export default function SearchChip({ categories }: CategorieProp) {
     setCategorie(categorie);
 
     try {
-      const response = await fetch(
-        `${ONLINE_COURSE_API}/categories/${categorie}/courses`
-      );
-      const data = await response.json();
+      const response = await axios.get(`/courses/categories`, {
+        params: { category_name: categorie },
+      });
+      const data = await response.data;
       setCourses(data);
       setLoad(false);
     } catch (error) {

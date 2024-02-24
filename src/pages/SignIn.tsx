@@ -17,7 +17,7 @@ import { useAuth } from "../hook/useAuth";
 import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import CustomLink from "../components/@core/CustomLink";
+import { Grid, Link } from "@mui/material";
 interface FormData {
   email: string;
   password: string;
@@ -97,7 +97,6 @@ export default function SignIn() {
                   id="email"
                   name="email"
                   autoComplete="email"
-                  autoFocus
                   label="Email"
                   value={value}
                   onBlur={onBlur}
@@ -113,7 +112,6 @@ export default function SignIn() {
               rules={{ required: true }}
               render={({ field: { value, onChange, onBlur } }) => (
                 <TextField
-                  autoFocus
                   autoComplete="current-password"
                   margin="normal"
                   required
@@ -151,12 +149,24 @@ export default function SignIn() {
               Sign In
             </CustomButton>
 
-            <CustomLink to={"/sign-up"}>
+            {/* <CustomLink to={"/sign-up"}>
               <CustomButton fullWidth variant="outlined">
                 Sign Up
               </CustomButton>
-            </CustomLink>
+            </CustomLink> */}
           </Box>
+          <Grid container>
+            <Grid item xs={12}>
+              <Link href="/forgot-password" variant="body2">
+                Forgot password?
+              </Link>
+            </Grid>
+            <Grid item xs={12}>
+              <Link href="/sign-up" variant="body2">
+                {"Don't have an account? Sign Up"}
+              </Link>
+            </Grid>
+          </Grid>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>

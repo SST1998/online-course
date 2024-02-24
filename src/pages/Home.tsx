@@ -8,23 +8,32 @@ import { useSearch } from "../store/search";
 import HomeLayout from "../components/pages/home/HomeLayout";
 
 // ** API
-import { ONLINE_COURSE_API } from "../assets/api/online-course-api";
-import { fetchData } from "../assets/utils/fetchData";
+import {
+  // fetchCourses,
+  fetchCoursesById,
+} from "../assets/api/course";
+import axios from "axios";
 
 const Home = () => {
   const { id, setCourses, setLoad } = useSearch();
+  fetchCoursesById();
 
   useEffect(() => {
     setLoad(true);
-    fetchData(`${ONLINE_COURSE_API}/courses/${id}`)
-      .then(async (response) => {
-        const data = await response;
-        setCourses(data);
-        setLoad(false);
-      })
-      .catch(() => {
-        setLoad(false);
-      });
+    const fetchData = async () => {
+      await axios
+        .get("/courses", { params: { course_id: id } })
+        .then(async (response) => {
+          const data = await response.data;
+
+          setCourses(data);
+          setLoad(false);
+        })
+        .catch(() => {
+          setLoad(false);
+        });
+    };
+    fetchData();
   }, [id, setCourses, setLoad]);
 
   return <HomeLayout />;

@@ -8,6 +8,7 @@ import Page404 from "./pages/Page404";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import { AuthProvider } from "./context/AuthContext";
+import ForgotPassword from "./pages/ForgotPassword";
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/course/:id" element={<Course />} />
             <Route path="/*" element={<Page404 />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
           </Routes>
         </Layout>
       </AuthProvider>

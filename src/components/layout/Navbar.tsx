@@ -15,12 +15,18 @@ import { Link } from "react-router-dom";
 import { navBarPages, webName } from "./navBarPages";
 import CustomLink from "../@core/CustomLink";
 import { useAuth } from "../../hook/useAuth";
+import { UserDataType } from "../../context/types";
+import { Avatar, useMediaQuery, useTheme } from "@mui/material";
 
 const Navbar = () => {
+  const theme = useTheme();
+  const mobileview = useMediaQuery(theme.breakpoints.down("sm"));
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
-  const userData = window.localStorage.getItem("user") ? true : false;
+  const getUserData = window.localStorage.getItem("userData");
+  const isUserData = getUserData ? true : false;
+  const userData: UserDataType = JSON.parse(getUserData!);
   const auth = useAuth();
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -37,7 +43,7 @@ const Navbar = () => {
           <Box
             sx={{
               marginRight: "1rem",
-              display: { xs: "none", md: "flex" },
+              display: { xs: "none", sm: "flex" },
               alignItems: "center",
               padding: "0.5rem",
             }}
@@ -50,7 +56,7 @@ const Navbar = () => {
                 textDecoration: "none",
               }}
             >
-              <Box sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}>
+              <Box sx={{ display: { xs: "none", sm: "flex" }, mr: 1 }}>
                 <img src={Logo} alt="logo" style={{ width: "3em" }} />
               </Box>
               <Typography
@@ -58,7 +64,7 @@ const Navbar = () => {
                 noWrap
                 align="center"
                 sx={{
-                  display: { xs: "none", md: "flex" },
+                  display: { xs: "none", sm: "flex" },
 
                   fontWeight: 700,
                   color: "#fff",
@@ -71,7 +77,14 @@ const Navbar = () => {
             </Link>
           </Box>
 
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+          {/* On Laptop & Ipad Device */}
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: { xs: "none", sm: "flex" },
+              justifyContent: "space-between",
+            }}
+          >
             {navBarPages.length !== 0
               ? navBarPages.map(({ pathName, url }: LinkType, index) => (
                   <Link key={index} to={url} style={{ textDecoration: "none" }}>
@@ -90,7 +103,7 @@ const Navbar = () => {
           <Box
             sx={{
               width: "100%",
-              display: { xs: "flex", md: "none" },
+              display: { xs: "flex", sm: "none" },
               alignItems: "center",
             }}
           >
@@ -124,16 +137,35 @@ const Navbar = () => {
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
+            {mobileview ? (
+              <IconButton
+                size="large"
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleOpenNavMenu}
+                color="inherit"
+              >
+                <MenuIcon />
+              </IconButton>
+            ) : (
+              <>
+                {isUserData && (
+                  <Button sx={{ color: "white" }} onClick={handleOpenNavMenu}>
+                    <Avatar
+                      sx={{
+                        mr: 1,
+                        textTransform: "uppercase",
+                        fontWeight: (theme) => theme.typography.fontWeightBold,
+                      }}
+                    >
+                      {userData.firstName[0]}
+                    </Avatar>
+                    {userData.firstName} {userData.lastName}
+                  </Button>
+                )}
+              </>
+            )}
             <Menu
               id="menu-appbar"
               anchorEl={anchorElNav}
@@ -149,6 +181,27 @@ const Navbar = () => {
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
             >
+              {isUserData && mobileview && (
+                <MenuItem
+                  sx={{
+                    textTransform: "uppercase",
+                  }}
+                >
+                  <Avatar
+                    sx={{
+                      mr: 1,
+                      fontWeight: (theme) => theme.typography.fontWeightBold,
+                    }}
+                  >
+                    <Typography variant="h6">
+                      {userData.firstName[0]}
+                    </Typography>
+                  </Avatar>
+                  <Typography variant="h6">
+                    {userData.firstName} {userData.lastName}
+                  </Typography>
+                </MenuItem>
+              )}
               {navBarPages.length !== 0
                 ? navBarPages.map(({ pathName, url }: LinkType, index) => (
                     <CustomLink key={index} to={url} style={{ color: "#000" }}>
@@ -158,22 +211,23 @@ const Navbar = () => {
                     </CustomLink>
                   ))
                 : null}
-              <CustomLink to={"/sign-in"} style={{ color: "#000" }}>
-                <MenuItem onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">Sign In</Typography>
+
+              {isUserData ? (
+                <MenuItem onClick={auth.logout}>
+                  <Typography textAlign="center">Sign Out</Typography>
                 </MenuItem>
-              </CustomLink>
+              ) : (
+                <CustomLink to={"/sign-in"} style={{ color: "#000" }}>
+                  <MenuItem onClick={handleCloseNavMenu}>
+                    <Typography textAlign="center">Sign In</Typography>
+                  </MenuItem>
+                </CustomLink>
+              )}
               <CustomLink to={"/sign-up"} style={{ color: "#000" }}>
                 <MenuItem onClick={handleCloseNavMenu}>
                   <Typography textAlign="center">Sign Up</Typography>
                 </MenuItem>
               </CustomLink>
-
-              {userData && (
-                <MenuItem onClick={auth.logout}>
-                  <Typography textAlign="center">Sign Out</Typography>
-                </MenuItem>
-              )}
             </Menu>
           </Box>
         </Toolbar>

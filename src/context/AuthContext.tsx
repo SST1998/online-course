@@ -1,25 +1,33 @@
+import { v4 as uuid } from "uuid";
+
 // ** React Imports
 import { createContext, useEffect, useState, ReactNode } from "react";
+
+// ** Axios
+import axios from "axios";
 
 // ** Types
 import {
   AuthValuesType,
   LoginParams,
   ErrCallbackType,
-  UserDataType,
+  RegisterParams,
 } from "./types";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ONLINE_COURSE_API } from "../assets/api/online-course-api";
+import CustomBackdrop from "../components/@core/CustomBackdrop";
+import { mockLogin, mockRegister, mockUsers } from "../@fake-db/auth";
+import { checkCookie, setCookie } from "../assets/utils/cookies";
+import Swal from "sweetalert2";
 
 // ** Defaults
 const defaultProvider: AuthValuesType = {
-  user: null,
   loading: true,
-  setUser: () => null,
   setLoading: () => Boolean,
   login: () => Promise.resolve(),
   logout: () => Promise.resolve(),
+  signup: () => Promise.resolve(),
 };
+const randomToken = uuid();
 
 const AuthContext = createContext(defaultProvider);
 
@@ -29,75 +37,105 @@ type Props = {
 
 const AuthProvider = ({ children }: Props) => {
   // ** States
-  const [user, setUser] = useState<UserDataType | null>(defaultProvider.user);
   const [loading, setLoading] = useState<boolean>(defaultProvider.loading);
 
   // ** Hooks
   const navigate = useNavigate();
   const location = useLocation();
-  useEffect(() => {
-    setLoading(true);
-    const initAuth = async (): Promise<void> => {
-      const userData = window.localStorage.getItem("user");
-      if (userData) {
-        setLoading(false);
-      } else {
-        setLoading(false);
-        if (location.pathname === "/") {
-          navigate("/");
-        } else if (location.pathname === "/sign-up") {
-          navigate("/sign-up");
-        } else {
-          navigate("/sign-in");
-        }
-      }
-    };
 
+  useEffect(() => {
+    const userList = window.localStorage.getItem("userList");
+    mockRegister();
+    mockLogin();
+    setLoading(true);
+    if (!userList) mockUsers();
     initAuth();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]);
 
-  const handleLogin = async (
+  const initAuth = async (): Promise<void> => {
+    const userData = window.localStorage.getItem("userData");
+    if (checkCookie() && userData) {
+      setLoading(false);
+    } else {
+      if (location.pathname === "/") {
+        navigate("/");
+      } else if (location.pathname === "/sign-up") {
+        navigate("/sign-up");
+      } else if (location.pathname === "/forgot-password") {
+        navigate("/forgot-password");
+      } else {
+        navigate("/sign-in");
+      }
+      window.localStorage.removeItem("userData");
+      setLoading(false);
+    }
+  };
+  const handleLogin = (
     params: LoginParams,
     errorCallback?: ErrCallbackType
   ) => {
-    await fetch(`${ONLINE_COURSE_API}/login/${params.email}/${params.password}`)
-      .then((res) => {
-        if (res.status == 200) {
-          // params.rememberMe
-          //   ? window.localStorage.setItem("user", JSON.stringify(params))
-          //   : null;
-          window.localStorage.setItem("user", JSON.stringify(params));
-
-          navigate("/");
-        } else if (res.status == 401) {
-          alert("Access denied");
-          return;
+    axios
+      .post("/mock/login", params)
+      .then(async (response) => {
+        if (params.rememberMe) {
+          setCookie("accessToken", randomToken, 0); // remember
+        } else {
+          setCookie("accessToken", randomToken, 1); // 1day
         }
+        window.localStorage.setItem(
+          "userData",
+          JSON.stringify(response.data.userData)
+        );
+        navigate("/");
       })
+
       .catch((err) => {
-        console.log("catch");
-        if (errorCallback) {
-          errorCallback(err);
-        }
+        if (errorCallback) errorCallback(err);
       });
   };
 
   const handleLogout = () => {
-    window.localStorage.removeItem("user");
+    window.localStorage.removeItem("userData");
+    setCookie("accessToken", "", 1);
     navigate("/sign-in");
   };
 
+  const handleRegister = (
+    params: RegisterParams,
+    errorCallback?: ErrCallbackType
+  ) => {
+    axios
+      .post("/mock/register", params)
+      .then(async (response) => {
+        if (response.status === 200) {
+          Swal.fire({
+            title: "Send e-mail succesfully",
+            text: "",
+            icon: "success",
+            confirmButtonColor: "#000",
+            confirmButtonText: "OK",
+          }).then(() => {
+            navigate("/sign-in");
+          });
+        }
+      })
+      .catch((err) => {
+        if (errorCallback) errorCallback(err);
+      });
+  };
+
   const values = {
-    user,
     loading,
-    setUser,
     setLoading,
     login: handleLogin,
     logout: handleLogout,
+    signup: handleRegister,
   };
-
-  return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={values}>
+      {loading ? <CustomBackdrop load={loading} /> : children}
+    </AuthContext.Provider>
+  );
 };
 
 export { AuthContext, AuthProvider };
