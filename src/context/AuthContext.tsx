@@ -55,6 +55,9 @@ const AuthProvider = ({ children }: Props) => {
   const initAuth = async (): Promise<void> => {
     const userData = window.localStorage.getItem("userData");
     if (checkCookie() && userData) {
+      if (location.pathname === "/sign-in") {
+        navigate("/");
+      }
       setLoading(false);
     } else {
       if (location.pathname === "/") {
